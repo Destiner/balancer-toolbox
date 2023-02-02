@@ -32,10 +32,16 @@
             v-model:amount-out="swapAmountOutValue"
             :tokens="TOKENS"
           />
+          <textarea
+            v-if="snippet"
+            :value="snippet"
+            readonly
+          />
           <div><button @click="queryAllPools">Query</button></div>
           <textarea
-            v-if="result.length > 0"
+            v-if="result"
             :value="result"
+            readonly
           />
         </div>
         <div v-else-if="queryBatchSwapSelectedOption === 'SELECTED_POOLS'">
@@ -58,8 +64,9 @@
           </div>
           <div><button @click="querySelectedPools">Query</button></div>
           <textarea
-            v-if="result.length > 0"
+            v-if="result"
             :value="result"
+            readonly
           />
         </div>
         <div v-else-if="queryBatchSwapSelectedOption === 'SELECTED_PATH'">
@@ -82,7 +89,7 @@ import {
 } from '@wagmi/core';
 import { alchemyProvider } from '@wagmi/core/providers/alchemy';
 import { BigNumber } from 'ethers';
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 import { vaultAbi } from '@/abi';
 import BaseMultiSelect from '@/components/BaseMultiSelect.vue';
@@ -154,6 +161,40 @@ watch(swapAmountOutValue, () => {
   isExactIn.value = false;
 });
 
+const snippet = computed<string | null>(() => {
+  if (selectedItem.value !== 'Query batch swap') {
+    return null;
+  }
+  if (queryBatchSwapSelectedOption.value !== 'ALL_POOLS') {
+    return null;
+  }
+  return `const swapInfo = await sdk.sor.getSwaps(
+  '${swapTokenInValue.value}',
+  '${swapTokenOutValue.value}',
+  ${isExactIn.value ? 'SwapTypes.SwapExactIn' : 'SwapTypes.SwapExactOut'},
+  ${
+    isExactIn.value
+      ? `BigNumber.from('${swapAmountInValue.value}')`
+      : `BigNumber.from('${swapAmountOutValue.value}')`
+  },
+);
+
+const vaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
+const vault = new ethers.Contract(vaultAddress, vaultAbi, provider);
+const values = await vault.queryBatchSwap(
+  ${isExactIn.value ? 'SwapTypes.SwapExactIn' : 'SwapTypes.SwapExactOut'},
+  swapInfo,
+  ['${swapTokenInValue.value}', '${swapTokenOutValue.value}'],
+  {
+    sender: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+    fromInternalBalance: false,
+    recipient: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+    toInternalBalance: false,
+  }
+)
+  `;
+});
+
 const result = ref('');
 
 async function queryAllPools(): Promise<void> {
@@ -174,7 +215,7 @@ async function queryAllPools(): Promise<void> {
     abi: vaultAbi,
     functionName: 'queryBatchSwap',
     args: [
-      0,
+      swapType,
       swapInfo.swaps.map((swap) => {
         return {
           poolId: swap.poolId as Address,
@@ -225,5 +266,9 @@ async function querySelectedPools(): Promise<void> {
 
 .form {
   padding: 16px;
+}
+
+textarea {
+  font-family: 'Courier New', Courier, monospace;
 }
 </style>
