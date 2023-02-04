@@ -26,11 +26,12 @@
         <div v-if="queryBatchSwapSelectedOption === 'ALL_POOLS'">
           2. Swap
           <SwapInput
+            v-if="tokens.length > 0"
             v-model:token-in="swapTokenInValue"
             v-model:token-out="swapTokenOutValue"
             v-model:amount-in="swapAmountInValue"
             v-model:amount-out="swapAmountOutValue"
-            :tokens="TOKENS"
+            :tokens="tokens"
           />
           <textarea
             v-if="snippet"
@@ -55,11 +56,12 @@
           <div>
             3. Swap
             <SwapInput
+              v-if="tokens.length > 0"
               v-model:token-in="swapTokenInValue"
               v-model:token-out="swapTokenOutValue"
               v-model:amount-in="swapAmountInValue"
               v-model:amount-out="swapAmountOutValue"
-              :tokens="TOKENS"
+              :tokens="tokens"
             />
           </div>
           <div><button @click="querySelectedPools">Query</button></div>
@@ -96,8 +98,9 @@ import BaseMultiSelect from '@/components/BaseMultiSelect.vue';
 import BaseTabs from '@/components/BaseTabs.vue';
 import SwapInput from '@/components/SwapInput.vue';
 import useEnv from '@/composables/useEnv';
+import TokenlistService, { DEFAULT_LIST } from '@/services/tokenlist';
 import { POOLS } from '@/utils/pools';
-import { TOKENS } from '@/utils/tokens';
+import { Token } from '@/utils/tokens';
 
 const { providerKey } = useEnv();
 
@@ -113,13 +116,21 @@ const sdk = new BalancerSDK({
   network: 1,
   rpcUrl: `https://eth-mainnet.g.alchemy.com/v2/${providerKey}`,
 });
+const service = new TokenlistService(DEFAULT_LIST);
 
 onMounted(() => {
   initSdk();
+  fetchTokens();
 });
 
 async function initSdk(): Promise<void> {
   await sdk.sor.fetchPools();
+}
+
+const tokens = ref<Token[]>([]);
+async function fetchTokens(): Promise<void> {
+  const list = await service.get();
+  tokens.value = list.tokens;
 }
 
 const items: string[] = ['Query batch swap', 'Pool state', 'Pool spot price'];
@@ -149,8 +160,8 @@ const poolOptions = POOLS.map((pool) => {
 const selectedPools = ref<string[]>([]);
 
 const isExactIn = ref(true);
-const swapTokenInValue = ref('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2');
-const swapTokenOutValue = ref('0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48');
+const swapTokenInValue = ref('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');
+const swapTokenOutValue = ref('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48');
 const swapAmountInValue = ref('');
 const swapAmountOutValue = ref('');
 
