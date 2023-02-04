@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { BalancerSDK, SwapTypes } from '@balancer-labs/sdk';
+import { BalancerSDK, SwapTypes, SubgraphPoolBase } from '@balancer-labs/sdk';
 import {
   Address,
   configureChains,
@@ -99,8 +99,12 @@ import BaseTabs from '@/components/BaseTabs.vue';
 import SwapInput from '@/components/SwapInput.vue';
 import useEnv from '@/composables/useEnv';
 import TokenlistService, { DEFAULT_LIST } from '@/services/tokenlist';
-import { POOLS } from '@/utils/pools';
 import { Token } from '@/utils/tokens';
+
+interface Pool {
+  name: string;
+  address: string;
+}
 
 const { providerKey } = useEnv();
 
@@ -125,6 +129,7 @@ onMounted(() => {
 
 async function initSdk(): Promise<void> {
   await sdk.sor.fetchPools();
+  pools.value = sdk.sor.getPools();
 }
 
 const tokens = ref<Token[]>([]);
@@ -151,17 +156,27 @@ watch(queryBatchSwapSelectedOption, () => {
   result.value = '';
 });
 
-const poolOptions = POOLS.map((pool) => {
-  return {
-    label: pool.name,
-    value: pool.address,
-  };
+const pools = ref<SubgraphPoolBase[]>([]);
+const poolOptions = computed(() => {
+  return pools.value.map((pool) => {
+    return {
+      label: pool.tokens
+        .map((poolToken) => {
+          const token = tokens.value.find(
+            (token) => token.address === poolToken.address,
+          );
+          return token?.symbol || poolToken.address.substring(0, 8);
+        })
+        .join('/'),
+      value: pool.address,
+    };
+  });
 });
 const selectedPools = ref<string[]>([]);
 
 const isExactIn = ref(true);
-const swapTokenInValue = ref('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2');
-const swapTokenOutValue = ref('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48');
+const swapTokenInValue = ref('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2');
+const swapTokenOutValue = ref('0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48');
 const swapAmountInValue = ref('');
 const swapAmountOutValue = ref('');
 

@@ -31,8 +31,17 @@ class Service {
 
   async get(): Promise<TokenList> {
     const response = await fetch(this.url);
-    const list = await response.json();
-    return list;
+    const list = (await response.json()) as TokenList;
+    const tokens = list.tokens.map((token) => {
+      return {
+        ...token,
+        address: token.address.toLowerCase(),
+      };
+    });
+    return {
+      ...list,
+      tokens,
+    };
   }
 }
 
