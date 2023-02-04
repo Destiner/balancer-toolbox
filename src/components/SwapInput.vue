@@ -4,7 +4,7 @@
       :model-value="amountIn"
       @update:model-value="handleAmountInInput"
     />
-    <BaseSelect
+    <TokenSelect
       :model-value="tokenIn"
       :options="tokenOptions"
       @update:model-value="handleTokenInUpdate"
@@ -15,7 +15,7 @@
       :model-value="amountOut"
       @update:model-value="handleAmountOutInput"
     />
-    <BaseSelect
+    <TokenSelect
       :model-value="tokenOut"
       :options="tokenOptions"
       @update:model-value="handleTokenOutUpdate"
@@ -29,7 +29,7 @@ import { computed } from 'vue';
 import { Token } from '@/utils/tokens';
 
 import BaseInput from './BaseInput.vue';
-import BaseSelect from './BaseSelect.vue';
+import TokenSelect from './TokenSelect.vue';
 
 const props = defineProps<{
   tokens: Token[];

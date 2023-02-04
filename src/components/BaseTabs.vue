@@ -5,8 +5,10 @@
   >
     <TabList>
       <Tab
-        v-for="option in options"
+        class="tab"
+        v-for="(option, index) in options"
         :key="option.value"
+        :class="{ selected: index === selectedOptionIndex }"
       >
         {{ option.label }}
       </Tab>
@@ -46,3 +48,16 @@ interface Option {
 // eslint-disable-next-line import/prefer-default-export
 export { Option };
 </script>
+
+<style scoped>
+.tab {
+  border: none;
+  background: #eee;
+  cursor: pointer;
+}
+
+.tab.selected {
+  border: 1px solid black;
+  background: #eee;
+}
+</style>
