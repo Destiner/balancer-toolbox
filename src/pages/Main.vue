@@ -57,7 +57,10 @@
       <div v-else>todo</div>
     </div>
     <div
-      v-if="selectedItem === 'Query batch swap'"
+      v-if="
+        selectedItem === 'Query batch swap' &&
+        queryBatchSwapSelectedOption === 'ALL_POOLS'
+      "
       class="section result"
     >
       <TextView
