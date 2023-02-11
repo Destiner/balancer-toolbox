@@ -262,7 +262,7 @@ async function queryAllPools(): Promise<void> {
             userData: swap.userData as Address,
           };
         }),
-        [swapTokenInValue.value as Address, swapTokenOutValue.value as Address],
+        swapInfo.tokenAddresses as Address[],
         {
           sender: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
           fromInternalBalance: false,
