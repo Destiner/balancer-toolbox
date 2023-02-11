@@ -5,9 +5,9 @@
   >
     <TabList>
       <Tab
-        class="tab"
         v-for="(option, index) in options"
         :key="option.value"
+        class="tab"
         :class="{ selected: index === selectedOptionIndex }"
       >
         {{ option.label }}
