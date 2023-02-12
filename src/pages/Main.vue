@@ -15,14 +15,14 @@
       </div>
     </div>
     <div class="section form">
-      <div v-if="selectedItem === 'Query batch swap'">
+      <div v-if="selectedItem === ACTION_QUERY_BATCH_SWAP">
         <div>
           <BaseTabs
             v-model="queryBatchSwapSelectedOption"
             :options="queryBatchSwapOptions"
           />
         </div>
-        <div v-if="queryBatchSwapSelectedOption === 'ALL_POOLS'">
+        <div v-if="queryBatchSwapSelectedOption === QUERY_BATCH_SWAP_ALL_POOLS">
           <SwapInput
             v-if="tokens.length > 0"
             v-model:token-in="swapTokenInValue"
@@ -32,7 +32,11 @@
             :tokens="tokens"
           />
         </div>
-        <div v-else-if="queryBatchSwapSelectedOption === 'SELECTED_POOLS'">
+        <div
+          v-else-if="
+            queryBatchSwapSelectedOption === QUERY_BATCH_SWAP_SELECTED_POOLS
+          "
+        >
           <div>
             <PoolSelect
               v-model="selectedPools"
@@ -50,14 +54,18 @@
             />
           </div>
         </div>
-        <div v-else-if="queryBatchSwapSelectedOption === 'SELECTED_PATH'">
+        <div
+          v-else-if="
+            queryBatchSwapSelectedOption === QUERY_BATCH_SWAP_SELECTED_PATH
+          "
+        >
           todo
         </div>
       </div>
       <div v-else>todo</div>
     </div>
     <div
-      v-if="selectedItem === 'Query batch swap'"
+      v-if="selectedItem === ACTION_QUERY_BATCH_SWAP"
       class="section result"
     >
       <TextView
@@ -98,6 +106,14 @@ import TextView from '@/components/TextView.vue';
 import useEnv from '@/composables/useEnv';
 import TokenlistService, { DEFAULT_LIST } from '@/services/tokenlist';
 import { Token } from '@/utils/tokens';
+
+const ACTION_QUERY_BATCH_SWAP = 'Query batch swap';
+const ACTION_POOL_STATE = 'Pool state';
+const ACTION_POOL_SPOT_PRICE = 'Pool spot price';
+
+const QUERY_BATCH_SWAP_ALL_POOLS = 'ALL_POOLS';
+const QUERY_BATCH_SWAP_SELECTED_POOLS = 'SELECTED_POOLS';
+const QUERY_BATCH_SWAP_SELECTED_PATH = 'SELECTED_PATH';
 
 interface Swap {
   poolId: Address;
@@ -141,7 +157,11 @@ async function fetchTokens(): Promise<void> {
   tokens.value = list.tokens;
 }
 
-const items: string[] = ['Query batch swap', 'Pool state', 'Pool spot price'];
+const items: string[] = [
+  ACTION_QUERY_BATCH_SWAP,
+  ACTION_POOL_STATE,
+  ACTION_POOL_SPOT_PRICE,
+];
 
 const selectedItem = ref(items[0]);
 
@@ -150,17 +170,17 @@ function selectItem(item: string): void {
 }
 
 const queryBatchSwapOptions = [
-  { label: 'All pools', value: 'ALL_POOLS' },
-  { label: 'Selected pools', value: 'SELECTED_POOLS' },
-  { label: 'Selected path', value: 'SELECTED_PATH' },
+  { label: 'All pools', value: QUERY_BATCH_SWAP_ALL_POOLS },
+  { label: 'Selected pools', value: QUERY_BATCH_SWAP_SELECTED_POOLS },
+  { label: 'Selected path', value: QUERY_BATCH_SWAP_SELECTED_PATH },
 ];
-const queryBatchSwapSelectedOption = ref('ALL_POOLS');
+const queryBatchSwapSelectedOption = ref(QUERY_BATCH_SWAP_ALL_POOLS);
 watch(queryBatchSwapSelectedOption, (newValue) => {
   result.value = '';
-  if (newValue === 'ALL_POOLS') {
+  if (newValue === QUERY_BATCH_SWAP_ALL_POOLS) {
     tokens.value = allTokens.value;
   }
-  if (newValue === 'SELECTED_POOLS') {
+  if (newValue === QUERY_BATCH_SWAP_SELECTED_POOLS) {
     tokens.value = getPoolTokens(selectedPools.value);
   }
 });
@@ -220,10 +240,10 @@ watch(swapAmountOutValue, () => {
 });
 
 const snippet = computed<string | null>(() => {
-  if (selectedItem.value !== 'Query batch swap') {
+  if (selectedItem.value !== ACTION_QUERY_BATCH_SWAP) {
     return null;
   }
-  if (queryBatchSwapSelectedOption.value === 'ALL_POOLS') {
+  if (queryBatchSwapSelectedOption.value === QUERY_BATCH_SWAP_ALL_POOLS) {
     return `const swapInfo = await sdk.sor.getSwaps(
   '${swapTokenInValue.value}',
   '${swapTokenOutValue.value}',
@@ -250,7 +270,7 @@ const values = await vault.queryBatchSwap(
 )
   `;
   }
-  if (queryBatchSwapSelectedOption.value === 'SELECTED_POOLS') {
+  if (queryBatchSwapSelectedOption.value === QUERY_BATCH_SWAP_SELECTED_POOLS) {
     const swapData = getSelectedPoolSwapData();
     return `const vaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 const vault = new ethers.Contract(vaultAddress, vaultAbi, provider);
@@ -272,13 +292,13 @@ const values = await vault.queryBatchSwap(
 const result = ref('');
 
 function query(): void {
-  if (selectedItem.value !== 'Query batch swap') {
+  if (selectedItem.value !== ACTION_QUERY_BATCH_SWAP) {
     return;
   }
-  if (queryBatchSwapSelectedOption.value === 'ALL_POOLS') {
+  if (queryBatchSwapSelectedOption.value === QUERY_BATCH_SWAP_ALL_POOLS) {
     queryAllPools();
   }
-  if (queryBatchSwapSelectedOption.value === 'SELECTED_POOLS') {
+  if (queryBatchSwapSelectedOption.value === QUERY_BATCH_SWAP_SELECTED_POOLS) {
     querySelectedPools();
   }
 }
