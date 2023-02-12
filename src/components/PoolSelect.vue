@@ -5,14 +5,16 @@
     @close="closeDialog"
   >
     <div class="items">
-      <div
-        v-for="option in options"
-        :key="option.value"
-        class="item"
-        @click="toggleOption(option)"
-      >
-        <span v-if="isSelected(option)">✓</span>
-        {{ option.label }}
+      <div>
+        <div
+          v-for="option in options"
+          :key="option.value"
+          class="item"
+          @click="toggleOption(option)"
+        >
+          <span v-if="isSelected(option)">✓</span>
+          {{ option.label }}
+        </div>
       </div>
     </div>
   </BaseDialog>
@@ -103,6 +105,9 @@ export { Option };
 
 .item {
   padding: 4px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   cursor: pointer;
 }
 
