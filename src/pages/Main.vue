@@ -106,6 +106,10 @@ import TextView from '@/components/TextView.vue';
 import useEnv from '@/composables/useEnv';
 import TokenlistService, { DEFAULT_LIST } from '@/services/tokenlist';
 import { Token } from '@/utils/tokens';
+import {
+  getQueryBatchSwapAllPoolsSnippet,
+  getQueryBatchSwapSelectedPoolsSnippet,
+} from '@/utils/snippets';
 
 const ACTION_QUERY_BATCH_SWAP = 'Query batch swap';
 const ACTION_POOL_STATE = 'Pool state';
@@ -244,47 +248,20 @@ const snippet = computed<string | null>(() => {
     return null;
   }
   if (queryBatchSwapSelectedOption.value === QUERY_BATCH_SWAP_ALL_POOLS) {
-    return `const swapInfo = await sdk.sor.getSwaps(
-  '${swapTokenInValue.value}',
-  '${swapTokenOutValue.value}',
-  ${isExactIn.value ? 'SwapTypes.SwapExactIn' : 'SwapTypes.SwapExactOut'},
-  ${
-    isExactIn.value
-      ? `BigNumber.from('${swapAmountInValue.value}')`
-      : `BigNumber.from('${swapAmountOutValue.value}')`
-  },
-);
-
-const vaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
-const vault = new ethers.Contract(vaultAddress, vaultAbi, provider);
-const values = await vault.queryBatchSwap(
-  ${isExactIn.value ? 'SwapTypes.SwapExactIn' : 'SwapTypes.SwapExactOut'},
-  swapInfo.swaps,
-  swapInfo.tokenAddresses,
-  {
-    sender: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
-    fromInternalBalance: false,
-    recipient: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
-    toInternalBalance: false,
-  }
-)
-  `;
+    return getQueryBatchSwapAllPoolsSnippet(
+      swapTokenInValue.value,
+      swapTokenOutValue.value,
+      isExactIn.value,
+      swapAmountInValue.value,
+      swapAmountOutValue.value,
+    );
   }
   if (queryBatchSwapSelectedOption.value === QUERY_BATCH_SWAP_SELECTED_POOLS) {
     const swapData = getSelectedPoolSwapData();
-    return `const vaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
-const vault = new ethers.Contract(vaultAddress, vaultAbi, provider);
-const values = await vault.queryBatchSwap(
-  'SwapTypes.SwapExactIn',
-  [${JSON.stringify(swapData.swaps)}],
-  ['${swapData.tokens.join("', '")}'],
-  {
-    sender: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
-    fromInternalBalance: false,
-    recipient: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
-    toInternalBalance: false,
-  }
-)`;
+    return getQueryBatchSwapSelectedPoolsSnippet(
+      swapData.swaps,
+      swapData.tokens,
+    );
   }
   return null;
 });
