@@ -1,41 +1,69 @@
 <template>
-  <TabGroup
-    :selected-index="selectedOptionIndex"
-    @change="handleChange"
-  >
-    <TabList>
-      <Tab
-        v-for="(option, index) in options"
-        :key="option.value"
-        class="tab"
-        :class="{ selected: index === selectedOptionIndex }"
-      >
-        {{ option.label }}
-      </Tab>
-    </TabList>
-  </TabGroup>
+  <div class="radio">
+    <BaseLabel
+      v-if="label"
+      :value="label"
+      :target="id"
+      :disabled="disabled"
+    />
+    <RadioGroup
+      :model-value="selectedOption"
+      @update:model-value="handleUpdate"
+    >
+      <RadioGroupLabel class="caption">Select an option</RadioGroupLabel>
+      <div class="list">
+        <RadioGroupOption
+          v-for="option in options"
+          v-slot="{ active }"
+          :key="option.value"
+          as="template"
+          :value="option.value"
+        >
+          <div
+            :class="{ active, checked: option.value === modelValue }"
+            class="option"
+          >
+            <RadioGroupLabel
+              as="p"
+              :class="{ checked: option.value === modelValue }"
+              class="label"
+            >
+              {{ option.label }}
+            </RadioGroupLabel>
+          </div>
+        </RadioGroupOption>
+      </div>
+    </RadioGroup>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { TabGroup, TabList, Tab } from '@headlessui/vue';
+import { RadioGroup, RadioGroupLabel, RadioGroupOption } from '@headlessui/vue';
 import { computed } from 'vue';
 
+import BaseLabel from './BaseLabel.vue';
+
 const props = defineProps<{
-  options: Option[];
   modelValue: string;
+  options: Option[];
+  disabled?: boolean;
+  label?: string;
 }>();
 
 const emit = defineEmits<{
-  (event: 'update:modelValue', value: string): void;
+  (e: 'update:modelValue', value: string): void;
 }>();
 
-const selectedOptionIndex = computed(() =>
-  props.options.findIndex((option) => option.value === props.modelValue),
-);
+const id = computed(() => `select-${Math.random().toString().substring(2)}`);
 
-function handleChange(newIndex: number): void {
-  const newSelected = props.options[newIndex];
-  emit('update:modelValue', newSelected.value);
+const selectedOption = computed<Option>(() => {
+  return props.options.find(
+    (option) => option.value === props.modelValue,
+  ) as Option;
+});
+
+function handleUpdate(value: string): void {
+  emit('update:modelValue', value);
 }
 </script>
 
@@ -50,14 +78,57 @@ export { Option };
 </script>
 
 <style scoped>
-.tab {
-  border: none;
-  background: #eee;
+.radio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+}
+
+.list {
+  display: flex;
+  gap: var(--spacing-normal);
+}
+
+.caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border-width: 0;
+  white-space: nowrap;
+}
+
+.option {
+  display: flex;
+  position: relative;
+  padding: 8px;
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-big);
+  outline: none;
   cursor: pointer;
 }
 
-.tab.selected {
-  border: 1px solid black;
-  background: #eee;
+.option.active {
+  border-color: var(--color-border-secondary);
+}
+
+.option.checked {
+  background: var(--color-bg-secondary);
+}
+
+.label {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.option:hover > .label {
+  color: var(--color-text-primary);
+}
+
+.label.checked {
+  color: var(--color-text-primary);
 }
 </style>

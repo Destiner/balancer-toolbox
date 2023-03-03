@@ -17,10 +17,10 @@
     <div class="section form">
       <div v-if="selectedItem === ACTION_QUERY_BATCH_SWAP">
         <div>
-          <BaseLabel :value="'Type'" />
           <BaseTabs
             v-model="queryBatchSwapSelectedOption"
             :options="queryBatchSwapOptions"
+            :label="'Type'"
           />
         </div>
         <div v-if="queryBatchSwapSelectedOption === QUERY_BATCH_SWAP_ALL_POOLS">
