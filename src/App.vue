@@ -17,7 +17,7 @@
   --color-text-inverted: hsl(var(--color-text-inverted-hsl));
   --color-border-primary: hsl(0deg 0% 80%);
   --color-border-secondary: hsla(0deg 0% 96% 40%);
-  --color-accent-hsl: 169deg 37% 49%;
+  --color-accent-hsl: 0deg 0% 0%;
   --color-accent: hsl(var(--color-accent-hsl));
   --color-error: hsl(3deg 100% 64%);
   --shadow-small: hsla(0deg 0% 0% 10%) 0 1px 1px 0;

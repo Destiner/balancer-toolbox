@@ -73,12 +73,21 @@
       class="section result"
     >
       <BaseLabel :value="'Code'" />
-      <TextView
+      <div
         v-if="snippet"
-        class="text-view"
-        :value="snippet"
-      />
-      <div><BaseButton @click="query">Query</BaseButton></div>
+        class="snippet-view"
+      >
+        <TextView
+          :value="snippet"
+          compact
+        />
+        <button
+          class="query-button"
+          @click="query"
+        >
+          Query
+        </button>
+      </div>
       <BaseLabel
         v-if="result"
         :value="'Result'"
@@ -511,7 +520,34 @@ function getIntersection<T>(a: T[], b: T[]): T[] {
   flex: 2;
 }
 
-.text-view {
+.snippet-view {
+  position: relative;
   width: 100%;
+}
+
+.query-button {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  margin: 0;
+  padding: 10px 20px;
+  transition: all 0.25s ease-in-out;
+  border: none;
+  border-radius: var(--border-radius-big);
+  background: var(--color-accent);
+  box-shadow: var(--shadow-medium);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.query-button:hover {
+  background: var(--color-accent);
+}
+
+.query-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 </style>
