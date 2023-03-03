@@ -98,19 +98,17 @@
         />
         <button
           class="query-button"
+          :disabled="isLoading"
           @click="query"
         >
           Query
         </button>
       </div>
-      <BaseLabel
-        v-if="result"
-        :value="'Result'"
-      />
+      <BaseLabel :value="'Result'" />
       <TextView
-        v-if="result"
         class="text-view"
         :value="result"
+        :is-loading="isLoading"
         readonly
       />
     </div>
@@ -300,18 +298,21 @@ const snippet = computed<string | null>(() => {
   return null;
 });
 
+const isLoading = ref(false);
 const result = ref('');
 
-function query(): void {
+async function query(): Promise<void> {
+  isLoading.value = true;
   if (selectedItem.value !== ACTION_QUERY_BATCH_SWAP) {
     return;
   }
   if (queryBatchSwapSelectedOption.value === QUERY_BATCH_SWAP_ALL_POOLS) {
-    queryAllPools();
+    await queryAllPools();
   }
   if (queryBatchSwapSelectedOption.value === QUERY_BATCH_SWAP_SELECTED_POOLS) {
-    querySelectedPools();
+    await querySelectedPools();
   }
+  isLoading.value = false;
 }
 
 async function queryAllPools(): Promise<void> {
