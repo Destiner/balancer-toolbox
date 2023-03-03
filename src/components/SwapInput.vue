@@ -14,6 +14,7 @@
     <div class="asset-input">
       <BaseInput
         :model-value="amountOut"
+        :disabled="inOnly"
         @update:model-value="handleAmountOutInput"
       />
       <TokenSelect
@@ -39,6 +40,7 @@ const props = defineProps<{
   tokenOut: string;
   amountIn: string;
   amountOut: string;
+  inOnly: boolean;
 }>();
 
 const emit = defineEmits<{

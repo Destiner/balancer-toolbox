@@ -38,6 +38,7 @@
             v-model:amount-in="swapAmountInValue"
             v-model:amount-out="swapAmountOutValue"
             :tokens="tokens"
+            :in-only="false"
           />
         </div>
         <div
@@ -65,6 +66,7 @@
               v-model:amount-in="swapAmountInValue"
               v-model:amount-out="swapAmountOutValue"
               :tokens="tokens"
+              :in-only="true"
             />
           </div>
         </div>
