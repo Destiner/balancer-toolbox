@@ -17,12 +17,14 @@
     <div class="section form">
       <div v-if="selectedItem === ACTION_QUERY_BATCH_SWAP">
         <div>
+          <BaseLabel :value="'Type'" />
           <BaseTabs
             v-model="queryBatchSwapSelectedOption"
             :options="queryBatchSwapOptions"
           />
         </div>
         <div v-if="queryBatchSwapSelectedOption === QUERY_BATCH_SWAP_ALL_POOLS">
+          <BaseLabel :value="'Pair'" />
           <SwapInput
             v-if="tokens.length > 0"
             v-model:token-in="swapTokenInValue"
@@ -38,12 +40,14 @@
           "
         >
           <div>
+            <BaseLabel :value="'Pools'" />
             <PoolSelect
               v-model="selectedPools"
               :options="poolOptions"
             />
           </div>
           <div>
+            <BaseLabel :value="'Pair'" />
             <SwapInput
               v-if="tokens.length > 0"
               v-model:token-in="swapTokenInValue"
@@ -68,12 +72,17 @@
       v-if="selectedItem === ACTION_QUERY_BATCH_SWAP"
       class="section result"
     >
+      <BaseLabel :value="'Code'" />
       <TextView
         v-if="snippet"
         class="text-view"
         :value="snippet"
       />
       <div><BaseButton @click="query">Query</BaseButton></div>
+      <BaseLabel
+        v-if="result"
+        :value="'Result'"
+      />
       <TextView
         v-if="result"
         class="text-view"
@@ -104,6 +113,7 @@ import BaseTabs from '@/components/BaseTabs.vue';
 import PoolSelect from '@/components/PoolSelect.vue';
 import SwapInput from '@/components/SwapInput.vue';
 import TextView from '@/components/TextView.vue';
+import BaseLabel from '@/components/__common/BaseLabel.vue';
 import useEnv from '@/composables/useEnv';
 import TokenlistService, { DEFAULT_LIST } from '@/services/tokenlist';
 import {
@@ -427,12 +437,15 @@ function getIntersection<T>(a: T[], b: T[]): T[] {
   }
 }
 
+.section {
+  margin: 32px 24px;
+}
+
 .list {
   display: flex;
   flex-direction: column;
   min-width: 300px;
   max-width: 300px;
-  margin: 32px 24px;
   overflow-y: auto;
 }
 
