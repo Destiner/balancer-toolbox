@@ -4,14 +4,17 @@
     :is-open="isDialogOpen"
     @close="closeDialog"
   >
-    <div class="items">
-      <div
-        v-for="option in options"
-        :key="option.value"
-        class="item"
-        @click="selectOption(option)"
-      >
-        {{ option.label }}
+    <div class="panel">
+      <BaseInput v-model="search" />
+      <div class="items">
+        <div
+          v-for="option in availableOptions"
+          :key="option.value"
+          class="item"
+          @click="selectOption(option)"
+        >
+          {{ option.label }}
+        </div>
       </div>
     </div>
   </BaseDialog>
@@ -22,6 +25,7 @@ import { computed, ref } from 'vue';
 
 import BaseButton from '@/components/__common/BaseButton.vue';
 import BaseDialog from '@/components/__common/BaseDialog.vue';
+import BaseInput from '@/components/__common/BaseInput.vue';
 
 const props = defineProps<{
   options: Option[];
@@ -46,8 +50,17 @@ function openDialog(): void {
   isDialogOpen.value = true;
 }
 function closeDialog(): void {
+  search.value = '';
   isDialogOpen.value = false;
 }
+
+const search = ref('');
+const availableOptions = computed(() => {
+  const searchValue = search.value.toLowerCase();
+  return props.options.filter((option) =>
+    option.label.toLowerCase().includes(searchValue),
+  );
+});
 </script>
 
 <script lang="ts">
@@ -61,17 +74,20 @@ export { Option };
 </script>
 
 <style scoped>
-.items {
-  display: flex;
-  flex-direction: column;
-  width: calc(100vw - 32px);
-  max-height: 80vh;
-  padding: 16px;
-  overflow-y: auto;
+.panel {
   border: 1px solid black;
   border-radius: 8px;
   background: #f2f2f2;
   box-shadow: #ffffff20 0 16px 64px;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  width: calc(100vw - 32px);
+  height: 80vh;
+  padding: 8px;
+  overflow-y: auto;
 }
 
 @media (min-width: 768px) {

@@ -22,15 +22,18 @@
     :is-open="isDialogOpen"
     @close="closeDialog"
   >
-    <div class="options">
-      <div>
-        <div
-          v-for="option in availableOptions"
-          :key="option.value"
-          class="item"
-          @click="select(option)"
-        >
-          {{ option.label }}
+    <div class="panel">
+      <BaseInput v-model="search" />
+      <div class="options">
+        <div>
+          <div
+            v-for="option in availableOptions"
+            :key="option.value"
+            class="item"
+            @click="select(option)"
+          >
+            {{ option.label }}
+          </div>
         </div>
       </div>
     </div>
@@ -42,6 +45,7 @@ import { computed, ref } from 'vue';
 
 import BaseButton from '@/components/__common/BaseButton.vue';
 import BaseDialog from '@/components/__common/BaseDialog.vue';
+import BaseInput from '@/components/__common/BaseInput.vue';
 import CrossIcon from '@/components/__common/icon/Cross.vue';
 
 const props = defineProps<{
@@ -72,12 +76,19 @@ function openDialog(): void {
   isDialogOpen.value = true;
 }
 function closeDialog(): void {
+  search.value = '';
   isDialogOpen.value = false;
 }
 
-const availableOptions = computed(() =>
-  props.options.filter((option) => !props.modelValue.includes(option.value)),
-);
+const search = ref('');
+const availableOptions = computed(() => {
+  const searchValue = search.value.toLowerCase();
+  return props.options.filter(
+    (option) =>
+      option.label.toLowerCase().includes(searchValue) &&
+      !props.modelValue.includes(option.value),
+  );
+});
 
 function deleteOption(option: Option): void {
   emit(
@@ -119,17 +130,20 @@ export { Option };
   width: 100px;
 }
 
-.options {
-  display: flex;
-  flex-direction: column;
-  width: calc(100vw - 32px);
-  max-height: 80vh;
-  padding: 16px;
-  overflow-y: auto;
+.panel {
   border: 1px solid black;
   border-radius: 8px;
   background: #f2f2f2;
   box-shadow: #ffffff20 0 16px 64px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  width: calc(100vw - 32px);
+  height: 80vh;
+  padding: 8px;
+  overflow-y: auto;
 }
 
 @media (min-width: 768px) {
