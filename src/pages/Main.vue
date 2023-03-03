@@ -135,7 +135,7 @@ import {
   readContract,
 } from '@wagmi/core';
 import { alchemyProvider } from '@wagmi/core/providers/alchemy';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber, constants, utils } from 'ethers';
 import { computed, onMounted, ref, watch } from 'vue';
 
 import { vaultAbi } from '@/abi';
@@ -375,9 +375,9 @@ async function queryAllPools(): Promise<void> {
         }),
         swapInfo.tokenAddresses as Address[],
         {
-          sender: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+          sender: constants.AddressZero,
           fromInternalBalance: false,
-          recipient: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+          recipient: constants.AddressZero,
           toInternalBalance: false,
         },
       ],
@@ -463,9 +463,9 @@ async function querySelectedPools(): Promise<void> {
         }),
         tokens as Address[],
         {
-          sender: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+          sender: constants.AddressZero,
           fromInternalBalance: false,
-          recipient: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+          recipient: constants.AddressZero,
           toInternalBalance: false,
         },
       ],

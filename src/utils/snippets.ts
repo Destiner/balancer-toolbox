@@ -1,3 +1,5 @@
+import { constants } from 'ethers';
+
 function getQueryBatchSwapAllPoolsSnippet(
   swapTokenInValue: string,
   swapTokenOutValue: string,
@@ -18,9 +20,9 @@ const values = await vault.queryBatchSwap(
   swapInfo.swaps,
   swapInfo.tokenAddresses,
   {
-    sender: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+    sender: ${constants.AddressZero},
     fromInternalBalance: false,
-    recipient: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+    recipient: ${constants.AddressZero},
     toInternalBalance: false,
   }
 )
@@ -38,9 +40,9 @@ const values = await vault.queryBatchSwap(
   [${JSON.stringify(swaps)}],
   ['${tokens.join("', '")}'],
   {
-    sender: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+    sender: ${constants.AddressZero},
     fromInternalBalance: false,
-    recipient: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045',
+    recipient: ${constants.AddressZero},
     toInternalBalance: false,
   }
 )`;
