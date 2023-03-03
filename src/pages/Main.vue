@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <h1>Main page</h1>
-  </div>
+  <AppHeader />
   <div class="sections">
     <div class="section list">
       <div
@@ -98,6 +96,7 @@ import { BigNumber } from 'ethers';
 import { computed, onMounted, ref, watch } from 'vue';
 
 import { vaultAbi } from '@/abi';
+import AppHeader from '@/components/AppHeader.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import BaseTabs from '@/components/BaseTabs.vue';
 import PoolSelect from '@/components/PoolSelect.vue';
