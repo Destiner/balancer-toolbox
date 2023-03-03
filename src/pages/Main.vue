@@ -2,14 +2,16 @@
   <AppHeader />
   <div class="sections">
     <div class="section list">
-      <div
-        v-for="(item, index) in items"
-        :key="index"
-        class="item"
-        :class="{ selected: item === selectedItem }"
-        @click="selectItem(item)"
-      >
-        {{ item }}
+      <div class="links">
+        <div
+          v-for="(item, index) in items"
+          :key="index"
+          class="link"
+          :class="{ selected: item === selectedItem }"
+          @click="selectItem(item)"
+        >
+          {{ item }}
+        </div>
       </div>
     </div>
     <div class="section form">
@@ -426,7 +428,52 @@ function getIntersection<T>(a: T[], b: T[]): T[] {
 }
 
 .list {
+  display: flex;
+  flex-direction: column;
   min-width: 300px;
+  max-width: 300px;
+  margin: 32px 24px;
+  overflow-y: auto;
+}
+
+.links {
+  display: flex;
+  gap: var(--spacing-small);
+  flex-direction: column;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.link {
+  padding: 4px 8px;
+  overflow-x: hidden;
+  border-radius: var(--border-radius-medium);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-big);
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .link {
+    overflow-x: initial;
+    font-size: var(--font-size-normal);
+  }
+}
+
+.link:hover {
+  background: var(--color-bg-secondary);
+  cursor: pointer;
+}
+
+.link.active {
+  background: hsla(var(--color-accent-hsl) / 8%);
+  color: var(--color-accent);
 }
 
 .item {
