@@ -30,16 +30,22 @@
           v-if="queryBatchSwapSelectedOption === QUERY_BATCH_SWAP_ALL_POOLS"
           class="form-element"
         >
-          <BaseLabel :value="'Pair'" />
-          <SwapInput
-            v-if="tokens.length > 0"
-            v-model:token-in="swapTokenInValue"
-            v-model:token-out="swapTokenOutValue"
-            v-model:amount-in="swapAmountInValue"
-            v-model:amount-out="swapAmountOutValue"
-            :tokens="tokens"
-            :in-only="false"
-          />
+          <div class="wei-amount-toggle">
+            <div>Use wei amounts</div>
+            <BaseToggle v-model="useWei" />
+          </div>
+          <div>
+            <BaseLabel :value="'Pair'" />
+            <SwapInput
+              v-if="tokens.length > 0"
+              v-model:token-in="swapTokenInValue"
+              v-model:token-out="swapTokenOutValue"
+              v-model:amount-in="swapAmountInValue"
+              v-model:amount-out="swapAmountOutValue"
+              :tokens="tokens"
+              :in-only="false"
+            />
+          </div>
         </div>
         <div
           v-else-if="
@@ -47,6 +53,10 @@
           "
           class="form-element"
         >
+          <div class="wei-amount-toggle">
+            <div>Use wei amounts</div>
+            <BaseToggle v-model="useWei" />
+          </div>
           <div class="pool-path">
             <BaseLabel :value="'Pool path'" />
             <PoolSelect
@@ -125,7 +135,7 @@ import {
   readContract,
 } from '@wagmi/core';
 import { alchemyProvider } from '@wagmi/core/providers/alchemy';
-import { BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import { computed, onMounted, ref, watch } from 'vue';
 
 import { vaultAbi } from '@/abi';
@@ -135,6 +145,7 @@ import SwapInput from '@/components/SwapInput.vue';
 import TextView from '@/components/TextView.vue';
 import BaseLabel from '@/components/__common/BaseLabel.vue';
 import BaseTabs from '@/components/__common/BaseTabs.vue';
+import BaseToggle from '@/components/__common/BaseToggle.vue';
 import useEnv from '@/composables/useEnv';
 import TokenlistService, { DEFAULT_LIST } from '@/services/tokenlist';
 import {
@@ -260,6 +271,7 @@ function getPoolTokens(poolIds: string[]): Token[] {
     .filter((token): token is Token => !!token);
 }
 
+const useWei = ref(false);
 const isExactIn = ref(true);
 const swapTokenInValue = ref('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2');
 const swapTokenOutValue = ref('0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48');
@@ -280,12 +292,23 @@ const snippet = computed<string | null>(() => {
     return null;
   }
   if (queryBatchSwapSelectedOption.value === QUERY_BATCH_SWAP_ALL_POOLS) {
+    const decimals = isExactIn.value
+      ? getAssetDecimals(swapTokenInValue.value)
+      : getAssetDecimals(swapTokenOutValue.value);
+    const amountString = isExactIn.value
+      ? swapAmountInValue.value
+      : swapAmountOutValue.value;
+    const amount =
+      amountString === ''
+        ? ''
+        : useWei.value
+        ? BigNumber.from(amountString)
+        : utils.parseUnits(amountString, decimals);
     return getQueryBatchSwapAllPoolsSnippet(
       swapTokenInValue.value,
       swapTokenOutValue.value,
       isExactIn.value,
-      swapAmountInValue.value,
-      swapAmountOutValue.value,
+      amount.toString(),
     );
   }
   if (queryBatchSwapSelectedOption.value === QUERY_BATCH_SWAP_SELECTED_POOLS) {
@@ -316,9 +339,15 @@ async function query(): Promise<void> {
 }
 
 async function queryAllPools(): Promise<void> {
-  const amount = isExactIn.value
-    ? BigNumber.from(swapAmountInValue.value)
-    : BigNumber.from(swapAmountOutValue.value);
+  const decimals = isExactIn.value
+    ? getAssetDecimals(swapTokenInValue.value)
+    : getAssetDecimals(swapTokenOutValue.value);
+  const amountString = isExactIn.value
+    ? swapAmountInValue.value
+    : swapAmountOutValue.value;
+  const amount = useWei.value
+    ? BigNumber.from(amountString)
+    : utils.parseUnits(amountString, decimals);
   const swapType = isExactIn.value
     ? SwapTypes.SwapExactIn
     : SwapTypes.SwapExactOut;
@@ -369,7 +398,10 @@ function getSelectedPoolSwapData(): {
       tokens: [],
     };
   }
-  const initialAmount = BigNumber.from(swapAmountInValue.value);
+  const decimals = getAssetDecimals(swapTokenInValue.value);
+  const initialAmount = useWei.value
+    ? BigNumber.from(swapAmountInValue.value)
+    : utils.parseUnits(swapAmountInValue.value, decimals);
   const swapTokens: string[] = [];
   const swaps: Swap[] = [];
   const activePools = selectedPools.value
@@ -442,6 +474,11 @@ async function querySelectedPools(): Promise<void> {
   } catch (e) {
     console.warn(e);
   }
+}
+
+function getAssetDecimals(asset: string): number {
+  const token = tokens.value.find((token) => token.address === asset);
+  return token ? token.decimals : 18;
 }
 
 function getIntersection<T>(a: T[], b: T[]): T[] {
@@ -537,6 +574,12 @@ function getIntersection<T>(a: T[], b: T[]): T[] {
 }
 
 .form-element {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+}
+
+.wei-amount-toggle {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-small);

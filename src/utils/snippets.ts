@@ -2,18 +2,13 @@ function getQueryBatchSwapAllPoolsSnippet(
   swapTokenInValue: string,
   swapTokenOutValue: string,
   isExactIn: boolean,
-  swapAmountInValue: string,
-  swapAmountOutValue: string,
+  amount: string,
 ): string {
   return `const swapInfo = await sdk.sor.getSwaps(
   '${swapTokenInValue}',
   '${swapTokenOutValue}',
   ${isExactIn ? 'SwapTypes.SwapExactIn' : 'SwapTypes.SwapExactOut'},
-  ${
-    isExactIn
-      ? `BigNumber.from('${swapAmountInValue}')`
-      : `BigNumber.from('${swapAmountOutValue}')`
-  },
+  ${`BigNumber.from('${amount}')`},
 );
 
 const vaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
