@@ -15,15 +15,21 @@
       </div>
     </div>
     <div class="section form">
-      <div v-if="selectedItem === ACTION_QUERY_BATCH_SWAP">
-        <div>
+      <div
+        v-if="selectedItem === ACTION_QUERY_BATCH_SWAP"
+        class="form-elements"
+      >
+        <div class="form-element">
           <BaseTabs
             v-model="queryBatchSwapSelectedOption"
             :options="queryBatchSwapOptions"
             :label="'Type'"
           />
         </div>
-        <div v-if="queryBatchSwapSelectedOption === QUERY_BATCH_SWAP_ALL_POOLS">
+        <div
+          v-if="queryBatchSwapSelectedOption === QUERY_BATCH_SWAP_ALL_POOLS"
+          class="form-element"
+        >
           <BaseLabel :value="'Pair'" />
           <SwapInput
             v-if="tokens.length > 0"
@@ -38,6 +44,7 @@
           v-else-if="
             queryBatchSwapSelectedOption === QUERY_BATCH_SWAP_SELECTED_POOLS
           "
+          class="form-element"
         >
           <div>
             <BaseLabel :value="'Pools'" />
@@ -47,7 +54,10 @@
             />
           </div>
           <div>
-            <BaseLabel :value="'Pair'" />
+            <BaseLabel
+              v-if="tokens.length > 0"
+              :value="'Pair'"
+            />
             <SwapInput
               v-if="tokens.length > 0"
               v-model:token-in="swapTokenInValue"
@@ -72,7 +82,10 @@
       v-if="selectedItem === ACTION_QUERY_BATCH_SWAP"
       class="section result"
     >
-      <BaseLabel :value="'Code'" />
+      <BaseLabel
+        v-if="snippet"
+        :value="'Code'"
+      />
       <div
         v-if="snippet"
         class="snippet-view"
@@ -513,6 +526,18 @@ function getIntersection<T>(a: T[], b: T[]): T[] {
 .form {
   flex: 3;
   padding: 16px;
+}
+
+.form-elements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-big);
+}
+
+.form-element {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
 }
 
 .result {

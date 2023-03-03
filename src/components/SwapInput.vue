@@ -1,25 +1,27 @@
 <template>
-  <div>
-    <BaseInput
-      :model-value="amountIn"
-      @update:model-value="handleAmountInInput"
-    />
-    <TokenSelect
-      :model-value="tokenIn"
-      :options="tokenOptions"
-      @update:model-value="handleTokenInUpdate"
-    />
-  </div>
-  <div>
-    <BaseInput
-      :model-value="amountOut"
-      @update:model-value="handleAmountOutInput"
-    />
-    <TokenSelect
-      :model-value="tokenOut"
-      :options="tokenOptions"
-      @update:model-value="handleTokenOutUpdate"
-    />
+  <div class="input">
+    <div class="asset-input">
+      <BaseInput
+        :model-value="amountIn"
+        @update:model-value="handleAmountInInput"
+      />
+      <TokenSelect
+        :model-value="tokenIn"
+        :options="tokenOptions"
+        @update:model-value="handleTokenInUpdate"
+      />
+    </div>
+    <div class="asset-input">
+      <BaseInput
+        :model-value="amountOut"
+        @update:model-value="handleAmountOutInput"
+      />
+      <TokenSelect
+        :model-value="tokenOut"
+        :options="tokenOptions"
+        @update:model-value="handleTokenOutUpdate"
+      />
+    </div>
   </div>
 </template>
 
@@ -71,3 +73,15 @@ function handleAmountOutInput(value: string): void {
   emit('update:amountOut', value);
 }
 </script>
+
+<style scoped>
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-normal);
+}
+
+.asset-input {
+  display: flex;
+}
+</style>
