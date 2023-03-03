@@ -1,18 +1,35 @@
 <template>
-  <BaseButton @click="openDialog"> {{ label }} ▼ </BaseButton>
+  <div class="selected">
+    <div
+      v-for="(opt, index) in selectedOptions"
+      :key="opt.value"
+      class="item"
+    >
+      <span>{{ index + 1 }}</span> {{ opt.label }}
+      <CrossIcon
+        class="icon"
+        @click="deleteOption(opt)"
+      />
+    </div>
+  </div>
+  <BaseButton
+    class="button"
+    @click="openDialog"
+  >
+    Add pool
+  </BaseButton>
   <BaseDialog
     :is-open="isDialogOpen"
     @close="closeDialog"
   >
-    <div class="items">
+    <div class="options">
       <div>
         <div
-          v-for="option in options"
+          v-for="option in availableOptions"
           :key="option.value"
           class="item"
-          @click="toggleOption(option)"
+          @click="select(option)"
         >
-          <span v-if="isSelected(option)">✓</span>
           {{ option.label }}
         </div>
       </div>
@@ -25,6 +42,7 @@ import { computed, ref } from 'vue';
 
 import BaseButton from '@/components/__common/BaseButton.vue';
 import BaseDialog from '@/components/__common/BaseDialog.vue';
+import CrossIcon from '@/components/__common/icon/Cross.vue';
 
 const props = defineProps<{
   options: Option[];
@@ -35,34 +53,14 @@ const emit = defineEmits<{
   (event: 'update:modelValue', value: string[]): void;
 }>();
 
-function toggleOption(option: Option): void {
-  if (isSelected(option)) {
-    emit(
-      'update:modelValue',
-      props.modelValue.filter((value) => value !== option.value),
-    );
-  } else {
-    emit('update:modelValue', [...props.modelValue, option.value]);
-  }
+function select(option: Option): void {
+  emit('update:modelValue', [...props.modelValue, option.value]);
+  closeDialog();
 }
 
 const selectedOptions = computed(() =>
   props.options.filter((option) => props.modelValue.includes(option.value)),
 );
-function isSelected(option: Option): boolean {
-  return selectedOptions.value.some(
-    (selectedOption) => selectedOption.value === option.value,
-  );
-}
-
-const label = computed(() => {
-  const count = selectedOptions.value.length;
-  if (count === 0) {
-    return 'Select pool(s)';
-  } else {
-    return `${count} pools selected`;
-  }
-});
 
 const isDialogOpen = ref(false);
 function openDialog(): void {
@@ -70,6 +68,17 @@ function openDialog(): void {
 }
 function closeDialog(): void {
   isDialogOpen.value = false;
+}
+
+const availableOptions = computed(() =>
+  props.options.filter((option) => !props.modelValue.includes(option.value)),
+);
+
+function deleteOption(option: Option): void {
+  emit(
+    'update:modelValue',
+    props.modelValue.filter((value) => value !== option.value),
+  );
 }
 </script>
 
@@ -84,7 +93,28 @@ export { Option };
 </script>
 
 <style scoped>
-.items {
+.selected .item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+}
+
+.selected .item .icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.selected .item .icon:hover {
+  opacity: 1;
+}
+
+.button {
+  width: 100px;
+}
+
+.options {
   display: flex;
   flex-direction: column;
   width: calc(100vw - 32px);
@@ -98,12 +128,12 @@ export { Option };
 }
 
 @media (min-width: 768px) {
-  .items {
+  .options {
     width: 450px;
   }
 }
 
-.item {
+.options .item {
   padding: 4px;
   overflow-x: hidden;
   text-overflow: ellipsis;
@@ -111,7 +141,7 @@ export { Option };
   cursor: pointer;
 }
 
-.item:hover {
+.options .item:hover {
   background: #eaeaea;
 }
 </style>

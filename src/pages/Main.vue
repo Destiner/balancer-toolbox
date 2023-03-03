@@ -46,8 +46,8 @@
           "
           class="form-element"
         >
-          <div>
-            <BaseLabel :value="'Pools'" />
+          <div class="pool-path">
+            <BaseLabel :value="'Pool path'" />
             <PoolSelect
               v-model="selectedPools"
               :options="poolOptions"
@@ -525,7 +525,6 @@ function getIntersection<T>(a: T[], b: T[]): T[] {
 
 .form {
   flex: 3;
-  padding: 16px;
 }
 
 .form-elements {
@@ -538,6 +537,11 @@ function getIntersection<T>(a: T[], b: T[]): T[] {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-small);
+}
+
+.pool-path {
+  display: flex;
+  flex-direction: column;
 }
 
 .result {
