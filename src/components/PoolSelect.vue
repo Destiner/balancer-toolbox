@@ -59,7 +59,12 @@ function select(option: Option): void {
 }
 
 const selectedOptions = computed(() =>
-  props.options.filter((option) => props.modelValue.includes(option.value)),
+  props.modelValue
+    .map((value) => {
+      const option = props.options.find((opt) => opt.value === value);
+      return option;
+    })
+    .filter((option): option is Option => option !== undefined),
 );
 
 const isDialogOpen = ref(false);
