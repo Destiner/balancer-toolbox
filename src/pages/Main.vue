@@ -7,7 +7,7 @@
           v-for="(item, index) in items"
           :key="index"
           class="link"
-          :class="{ selected: item === selectedItem }"
+          :class="{ active: item === selectedItem }"
           @click="selectItem(item)"
         >
           {{ item }}
