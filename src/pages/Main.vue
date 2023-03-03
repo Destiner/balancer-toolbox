@@ -105,11 +105,11 @@ import SwapInput from '@/components/SwapInput.vue';
 import TextView from '@/components/TextView.vue';
 import useEnv from '@/composables/useEnv';
 import TokenlistService, { DEFAULT_LIST } from '@/services/tokenlist';
-import { Token } from '@/utils/tokens';
 import {
   getQueryBatchSwapAllPoolsSnippet,
   getQueryBatchSwapSelectedPoolsSnippet,
 } from '@/utils/snippets';
+import { Token } from '@/utils/tokens';
 
 const ACTION_QUERY_BATCH_SWAP = 'Query batch swap';
 const ACTION_POOL_STATE = 'Pool state';
