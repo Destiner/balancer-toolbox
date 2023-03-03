@@ -108,12 +108,12 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 import { vaultAbi } from '@/abi';
 import AppHeader from '@/components/AppHeader.vue';
-import BaseButton from '@/components/BaseButton.vue';
-import BaseTabs from '@/components/BaseTabs.vue';
 import PoolSelect from '@/components/PoolSelect.vue';
 import SwapInput from '@/components/SwapInput.vue';
 import TextView from '@/components/TextView.vue';
+import BaseButton from '@/components/__common/BaseButton.vue';
 import BaseLabel from '@/components/__common/BaseLabel.vue';
+import BaseTabs from '@/components/__common/BaseTabs.vue';
 import useEnv from '@/composables/useEnv';
 import TokenlistService, { DEFAULT_LIST } from '@/services/tokenlist';
 import {

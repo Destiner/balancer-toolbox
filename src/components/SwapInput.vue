@@ -26,9 +26,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import BaseInput from '@/components/__common/BaseInput.vue';
 import { Token } from '@/utils/tokens';
 
-import BaseInput from './BaseInput.vue';
 import TokenSelect from './TokenSelect.vue';
 
 const props = defineProps<{

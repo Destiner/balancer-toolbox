@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-import BaseButton from './BaseButton.vue';
-import BaseDialog from './BaseDialog.vue';
+import BaseButton from '@/components/__common/BaseButton.vue';
+import BaseDialog from '@/components/__common/BaseDialog.vue';
 
 const props = defineProps<{
   options: Option[];
